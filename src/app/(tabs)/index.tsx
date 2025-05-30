@@ -1,22 +1,28 @@
-import { StyleSheet, Text, View } from 'react-native';
-import books from '@/assets/data/books';
+import { StyleSheet, Text, View, Image } from 'react-native';
+import books, { Book } from '@/assets/data/books';
+import BookListItem from '@/src/components/BookListItem';
 
 const book = books[0]
 
 export default function TabOneScreen() {
   return (
     <View style={styles.container}>
-      <Text className='text-red-600 text-2xl'>{book.title}</Text>
-      <Text> {book.author} </Text>
+      <BookListItem book= {books[1]} />
+      <BookListItem book= {books[0]} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  image:{
+    width: 100,
+    aspectRatio: 1
+  },
   container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#F1F1F1',
   },
   title: {
     fontSize: 20,
