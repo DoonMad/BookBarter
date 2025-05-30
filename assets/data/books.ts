@@ -69,7 +69,7 @@ const books: Book[] = [
     id: 5,
     title: 'Harry Potter',
     author: 'J. K. Rowling',
-    image: 'https://images-na.ssl-images-amazon.com/images/I/713jIoMO3UL.jpg',
+    image: '',
     condition: 'Like New',
     location: 'Aurangabad, MH',
     owner: {

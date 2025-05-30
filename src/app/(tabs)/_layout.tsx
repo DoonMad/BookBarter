@@ -27,10 +27,11 @@ export default function TabLayout() {
         headerShown: useClientOnlyValue(false, true),
       }}>
       <Tabs.Screen
-        name="index"
+        name="explore"
         options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: 'Explore',
+          headerShown: false,
+          tabBarIcon: ({ color }) => <TabBarIcon name="book" color={color} />,
           headerRight: () => (
             <Link href="/modal" asChild>
               <Pressable>
