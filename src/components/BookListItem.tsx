@@ -17,8 +17,8 @@ const BookListItem = ({ book }: BookListItemProps) => {
     >
       <Image
         source={
-            book.image
-            ? { uri: book.image }
+            book.images[0]
+            ? { uri: book.images[0] }
             : require('../../assets/images/no-image.png')
         }
         style={styles.image}
