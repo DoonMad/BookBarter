@@ -10,6 +10,7 @@ import { useRequest } from '@/src/contexts/RequestProvider';
 import { useState } from 'react';
 
 const { width: screenWidth } = Dimensions.get('window');
+const currentUserId = 1; // temporary
 
 const ImageCarousel = ({ images }: { images: string[] }) => {
   return (
@@ -53,7 +54,7 @@ const BookDetailsScreen = () => {
   const { bookId } = useLocalSearchParams();
   const book = books.find((b) => b.id.toString() === bookId);
   const owner = users.find((u) => u.id === book?.ownerId);
-  const { addRequest } = useRequest();
+  const { requests, addRequest } = useRequest();
 
   if (!book) {
     return (
@@ -65,6 +66,19 @@ const BookDetailsScreen = () => {
 
   const handleRequest = (intent?: string) => {
     if (!intent) return;
+    const existingRequest = requests.find(
+      (r) =>
+        r.bookId === book.id &&
+        r.requesterId === currentUserId && // temporary
+        r.type === intent
+    );
+
+    if (existingRequest) {
+      console.log("Request already sent!");
+      alert("Request already sent!");
+      return; // don't create a duplicate
+    }
+
     console.log(intent)
     const newRequest: Request = {
       id:  Date.now() , // temporary;
