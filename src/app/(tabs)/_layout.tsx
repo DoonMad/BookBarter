@@ -1,11 +1,13 @@
 import React from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Link, Tabs } from 'expo-router';
+import { Link, router, Tabs } from 'expo-router';
 import { Pressable } from 'react-native';
 
 import Colors from '@/src/constants/Colors';
 import { useColorScheme } from '@/src/components/useColorScheme';
 import { useClientOnlyValue } from '@/src/components/useClientOnlyValue';
+import { FloatingAction } from 'react-native-floating-action';
+import FloatingAddButton from '@/src/components/FloatingAddButton';
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
@@ -19,6 +21,7 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   return (
+    <>
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
@@ -56,5 +59,15 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
+    {/* <FloatingAction
+      position="center"
+      color={Colors[colorScheme ?? 'light'].tint}
+      tintColor='black'
+      iconHeight={20}
+      iconWidth={20}
+      onPressMain={() => router.replace('/AddBook')}
+    /> */}
+    <FloatingAddButton />
+    </>
   );
 }
