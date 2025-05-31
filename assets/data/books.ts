@@ -2,14 +2,9 @@ export type Book = {
   id: number;
   title: string;
   author: string;
-  images: string[]; // Replaces `image`
+  images: string[];
   condition: 'Like New' | 'Good' | 'Fair' | 'Poor';
-  location: string;
-  owner: {
-    name: string;
-    email: string;
-    phone?: string; // Optional
-  };
+  ownerId: number; // Refers to User.id
   intent: 'Giveaway' | 'Exchange';
   description?: string;
   tags?: string[];
@@ -25,14 +20,9 @@ const books: Book[] = [
       'https://images.unsplash.com/photo-1588776814546-79b10f86e5f4',
     ],
     condition: 'Like New',
-    location: 'Nagpur, MH',
-    owner: {
-      name: 'Aman Verma',
-      email: 'aman@example.com',
-      phone: '9876543210',
-    },
+    ownerId: 1,
     intent: 'Exchange',
-    description: 'A guide to building good habits and breaking bad ones with small, consistent changes.',
+    description: 'A guide to building good habits and breaking bad ones.',
     tags: ['Self-Help', 'Productivity'],
   },
   {
@@ -44,13 +34,9 @@ const books: Book[] = [
       'https://images.meesho.com/images/products/159817845/mzwwj_512.webp',
     ],
     condition: 'Good',
-    location: 'Pune, MH',
-    owner: {
-      name: 'Riya Sharma',
-      email: 'riya@example.com',
-    },
+    ownerId: 2,
     intent: 'Giveaway',
-    description: 'An allegorical novel about a young shepherd’s journey to find his destiny.',
+    description: 'A novel about a shepherd’s quest for his destiny.',
     tags: ['Fiction', 'Philosophy', 'Spiritual'],
   },
   {
@@ -62,14 +48,9 @@ const books: Book[] = [
       'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa',
     ],
     condition: 'Fair',
-    location: 'Delhi, DL',
-    owner: {
-      name: 'Sarthak Joshi',
-      email: 'sarthak@example.com',
-      phone: '9123456789',
-    },
+    ownerId: 3,
     intent: 'Exchange',
-    description: 'A handbook of agile software craftsmanship and writing cleaner code.',
+    description: 'Guide to writing cleaner, more maintainable code.',
     tags: ['Programming', 'Software Engineering'],
   },
   {
@@ -81,13 +62,9 @@ const books: Book[] = [
       'https://images.unsplash.com/photo-1600195077072-245b07bda7dd',
     ],
     condition: 'Poor',
-    location: 'Nagpur, MH',
-    owner: {
-      name: 'Sneha Patil',
-      email: 'sneha@example.com',
-    },
+    ownerId: 4,
     intent: 'Giveaway',
-    description: 'Explores the history of humankind from the Stone Age to the modern age.',
+    description: 'History of humankind from ancient to modern times.',
     tags: ['History', 'Anthropology', 'Non-Fiction'],
   },
   {
@@ -95,18 +72,40 @@ const books: Book[] = [
     title: 'Harry Potter',
     author: 'J. K. Rowling',
     images: [
-      '', // Empty image will fallback to placeholder
+      '',
       'https://images.unsplash.com/photo-1556905055-8f358a7a47b2',
     ],
     condition: 'Like New',
-    location: 'Aurangabad, MH',
-    owner: {
-      name: 'Apoorva Mundada',
-      email: 'apoorva@example.com',
-    },
+    ownerId: 5,
     intent: 'Giveaway',
-    description: 'A magical journey of a boy wizard and his adventures at Hogwarts.',
+    description: 'Magical adventures of a young wizard.',
     tags: ['Fantasy', 'Adventure'],
+  },
+  {
+    id: 6,
+    title: 'The Subtle Art of Not Giving a F*ck',
+    author: 'Mark Manson',
+    images: [
+      'https://images-na.ssl-images-amazon.com/images/I/71QKQ9mwV7L.jpg',
+    ],
+    condition: 'Good',
+    ownerId: 6,
+    intent: 'Exchange',
+    description: 'A counterintuitive approach to living a good life.',
+    tags: ['Self-Help', 'Psychology'],
+  },
+  {
+    id: 7,
+    title: 'Deep Work',
+    author: 'Cal Newport',
+    images: [
+      'https://images-na.ssl-images-amazon.com/images/I/81BPKT8ZzsL.jpg',
+    ],
+    condition: 'Like New',
+    ownerId: 7,
+    intent: 'Giveaway',
+    description: 'Rules for focused success in a distracted world.',
+    tags: ['Productivity', 'Work'],
   },
 ];
 

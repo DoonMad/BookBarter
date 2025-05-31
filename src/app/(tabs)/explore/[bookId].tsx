@@ -4,12 +4,16 @@ import { Ionicons, MaterialIcons, FontAwesome } from '@expo/vector-icons';
 import * as Linking from 'expo-linking';
 import { Share } from 'react-native';
 import books from '@/assets/data/books';
+import users from '@/assets/data/users';
+import {Request} from '@/assets/data/requests';
+import { useRequest } from '@/src/contexts/RequestProvider';
+import { useState } from 'react';
 
 const { width: screenWidth } = Dimensions.get('window');
 
 const ImageCarousel = ({ images }: { images: string[] }) => {
   return (
-    <View className="w-full" style={{ height: screenWidth * 1.2 }}>
+    <View className="w-full bg-gray-200" style={{ height: screenWidth * 1.2 }}>
       <FlatList
         horizontal
         pagingEnabled
@@ -48,6 +52,8 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
 const BookDetailsScreen = () => {
   const { bookId } = useLocalSearchParams();
   const book = books.find((b) => b.id.toString() === bookId);
+  const owner = users.find((u) => u.id === book?.ownerId);
+  const { addRequest } = useRequest();
 
   if (!book) {
     return (
@@ -56,6 +62,22 @@ const BookDetailsScreen = () => {
       </View>
     );
   }
+
+  const handleRequest = (intent?: string) => {
+    if (!intent) return;
+    console.log(intent)
+    const newRequest: Request = {
+      id:  Date.now() , // temporary;
+      bookId: book.id,
+      requesterId: 1, // replace with actual user ID later
+      type: intent === 'Exchange' || intent === 'Giveaway' ? intent : 'Exchange', // type-safe
+      status: 'Pending',
+      timestamp: new Date().toISOString(), // convert Date to string
+    };
+
+    addRequest(newRequest);
+  };
+
 
   const handleShare = async () => {
     try {
@@ -135,32 +157,32 @@ const BookDetailsScreen = () => {
             <View className="space-y-3">
               <View className="flex-row items-center">
                 <Ionicons name="person" size={20} color="#6b7280" />
-                <Text className="ml-3 text-base text-gray-700">{book.owner?.name || 'Anonymous'}</Text>
+                <Text className="ml-3 text-base text-gray-700">{owner?.name || 'Anonymous'}</Text>
               </View>
               
-              {book.owner?.email && (
+              {owner?.email && (
                 <Pressable 
-                  onPress={() => Linking.openURL(`mailto:${book.owner.email}`)}
+                  onPress={() => Linking.openURL(`mailto:${owner.email}`)}
                   className="flex-row items-center"
                 >
                   <Ionicons name="mail" size={20} color="#6b7280" />
-                  <Text className="ml-3 text-base text-blue-600 underline">{book.owner.email}</Text>
+                  <Text className="ml-3 text-base text-blue-600 underline">{owner.email}</Text>
                 </Pressable>
               )}
               
-              {book.owner?.phone && (
+              {owner?.phone && (
                 <Pressable 
-                  onPress={() => Linking.openURL(`tel:${book.owner.phone}`)}
+                  onPress={() => Linking.openURL(`tel:${owner.phone}`)}
                   className="flex-row items-center"
                 >
                   <Ionicons name="call" size={20} color="#6b7280" />
-                  <Text className="ml-3 text-base text-blue-600 underline">{book.owner.phone}</Text>
+                  <Text className="ml-3 text-base text-blue-600 underline">{owner.phone}</Text>
                 </Pressable>
               )}
               
               <View className="flex-row items-center">
                 <Ionicons name="location" size={20} color="#6b7280" />
-                <Text className="ml-3 text-base text-gray-700">{book.location}</Text>
+                <Text className="ml-3 text-base text-gray-700">{owner?.location}</Text>
               </View>
             </View>
           </View>
@@ -179,7 +201,7 @@ const BookDetailsScreen = () => {
           
           {book.intent === 'Giveaway' ? (
             <Pressable
-              onPress={() => console.log('Giveaway request')}
+              onPress={() => handleRequest('Giveaway')}
               className="flex-1 py-3 rounded-xl items-center bg-indigo-600"
             >
               <Text className="text-white font-bold text-lg">Request Giveaway</Text>
@@ -187,16 +209,16 @@ const BookDetailsScreen = () => {
           ) : (
             <View className="flex-1 flex-row gap-2">
               <Pressable
-                onPress={() => console.log('Exchange request')}
+                onPress={() => handleRequest('Exchange')}
                 className="flex-1 py-3 rounded-xl items-center bg-indigo-600"
               >
-                <Text className="text-white font-bold text-lg">Exchange</Text>
+                <Text className="text-white font-bold text-lg">Request Exchange</Text>
               </Pressable>
               <Pressable
-                onPress={() => console.log('Giveaway request')}
+                onPress={() => handleRequest('Giveaway')}
                 className="flex-1 py-3 rounded-xl items-center bg-purple-600"
               >
-                <Text className="text-white font-bold text-lg">Request</Text>
+                <Text className="text-white font-bold text-lg">Request Giveaway</Text>
               </Pressable>
             </View>
           )}
