@@ -9,7 +9,7 @@ import RequestProvider from '../contexts/RequestProvider';
 
 import { useColorScheme } from '@/src/components/useColorScheme';
 
-import "../global.css"
+import "@/src/global.css"
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -55,7 +55,9 @@ function RootLayoutNav() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <RequestProvider>
         <Stack>
+          <Stack.Screen name="index"/>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)"/>
           <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
         </Stack>
       </RequestProvider>
