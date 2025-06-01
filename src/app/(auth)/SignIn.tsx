@@ -1,8 +1,11 @@
 import { View, Text, TextInput, Pressable } from 'react-native';
 import React, { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { Link } from 'expo-router';
+import { Link, Redirect } from 'expo-router';
 import { supabase } from '../../lib/supabase'
+import { useAuth } from '@/src/contexts/AuthProvider';
+import { ActivityIndicator } from 'react-native-paper';
+
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
@@ -10,6 +13,15 @@ const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false)
+  const {session, sessionLoading} = useAuth()
+
+  if(sessionLoading){
+    return <ActivityIndicator />
+  }
+
+  if(session){
+    return <Redirect href='/' />
+  }
 
   const validate = () => {
     const newErrors: Record<string, string> = {};

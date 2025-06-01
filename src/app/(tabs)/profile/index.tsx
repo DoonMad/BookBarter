@@ -5,6 +5,7 @@ import users from '@/assets/data/users';
 import books from '@/assets/data/books';
 import requests from '@/assets/data/requests';
 import { useState } from 'react';
+import { supabase } from '@/src/lib/supabase';
 
 const ProfileScreen = () => {
   const currentUserId = 1; // Will be replaced with context later
@@ -25,6 +26,7 @@ const ProfileScreen = () => {
   // Mock logout function
   const logout = () => {
     console.log('User logged out');
+    supabase.auth.signOut()
     // Implement actual logout logic later
   };
 

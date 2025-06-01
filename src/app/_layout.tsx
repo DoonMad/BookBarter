@@ -1,7 +1,7 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Redirect, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
@@ -10,7 +10,8 @@ import RequestProvider from '../contexts/RequestProvider';
 import { useColorScheme } from '@/src/components/useColorScheme';
 
 import "@/src/global.css"
-import AuthProvider from '../contexts/AuthProvider';
+import AuthProvider, { useAuth } from '../contexts/AuthProvider';
+import { ActivityIndicator } from 'react-native-paper';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -51,6 +52,13 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
+  const {session, sessionLoading} = useAuth();
+  // if(sessionLoading){
+  //   return <ActivityIndicator />
+  // }
+  // if(session){
+  //   return <Redirect href={'/(auth)/SignIn'} />
+  // }
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
@@ -59,7 +67,7 @@ function RootLayoutNav() {
           <Stack>
             <Stack.Screen name="index"/>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="(auth)"/>
+            <Stack.Screen name="(auth)" options={{ headerShown: false }}/>
             <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
           </Stack>
         </RequestProvider>

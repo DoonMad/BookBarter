@@ -1,4 +1,4 @@
-import { View, Text, TextInput, Pressable } from 'react-native';
+import { View, Text, TextInput, Pressable, ActivityIndicator } from 'react-native';
 import React, { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
@@ -15,6 +15,10 @@ const SignUp = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false)
 
+  if(loading){
+    return <ActivityIndicator/> 
+  }
+
   const validate = () => {
     const newErrors: Record<string, string> = {};
     if (!formData.name.trim()) newErrors.name = 'Name is required';
@@ -25,6 +29,7 @@ const SignUp = () => {
   };
 
   async function signUpWithEmail() {
+    if (!validate()) return;
     setLoading(true)
     const {
       data: { session },
@@ -115,7 +120,7 @@ const SignUp = () => {
 
       {/* Sign Up Button */}
       <Pressable
-        onPress={() => validate() && console.log('Sign up')}
+        onPress={() => signUpWithEmail()}
         className="bg-[dodgerblue] py-3 rounded-lg items-center mb-4"
       >
         <Text className="text-white font-bold text-lg">Sign Up</Text>

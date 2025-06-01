@@ -1,6 +1,6 @@
 import React from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Link, router, Tabs } from 'expo-router';
+import { Link, Redirect, router, Tabs } from 'expo-router';
 import { Pressable } from 'react-native';
 
 import Colors from '@/src/constants/Colors';
@@ -8,6 +8,8 @@ import { useColorScheme } from '@/src/components/useColorScheme';
 import { useClientOnlyValue } from '@/src/components/useClientOnlyValue';
 import { FloatingAction } from 'react-native-floating-action';
 import FloatingAddButton from '@/src/components/FloatingAddButton';
+import { useAuth } from '@/src/contexts/AuthProvider';
+import { ActivityIndicator } from 'react-native-paper';
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
@@ -19,6 +21,13 @@ function TabBarIcon(props: {
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const {sessionLoading, session} = useAuth();
+  if(sessionLoading){
+    return <ActivityIndicator />
+  }
+  if(!session){
+    return <Redirect href={'/'} />
+  }
 
   return (
     <>
