@@ -10,6 +10,7 @@ import RequestProvider from '../contexts/RequestProvider';
 import { useColorScheme } from '@/src/components/useColorScheme';
 
 import "@/src/global.css"
+import AuthProvider from '../contexts/AuthProvider';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -53,14 +54,16 @@ function RootLayoutNav() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <RequestProvider>
-        <Stack>
-          <Stack.Screen name="index"/>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)"/>
-          <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-        </Stack>
-      </RequestProvider>
+      <AuthProvider>
+        <RequestProvider>
+          <Stack>
+            <Stack.Screen name="index"/>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="(auth)"/>
+            <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+          </Stack>
+        </RequestProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

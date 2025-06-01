@@ -1,6 +1,6 @@
 import { View, Text, Image, FlatList, Pressable, Switch } from 'react-native';
 import { FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import users from '@/assets/data/users';
 import books from '@/assets/data/books';
 import requests from '@/assets/data/requests';
@@ -100,11 +100,9 @@ const ProfileScreen = () => {
           <Text className="text-gray-600">{currentUser?.email}</Text>
         </View>
         
-        <Link href="/edit-profile" asChild>
-          <Pressable className="bg-[dodgerblue] py-2 rounded-lg items-center">
-            <Text className="text-white font-medium">Edit Profile</Text>
-          </Pressable>
-        </Link>
+        <Pressable onPress={() => router.push('/(tabs)/profile/EditProfile')} className="bg-[dodgerblue] py-2 rounded-lg items-center">
+          <Text className="text-white font-medium">Edit Profile</Text>
+        </Pressable>
       </View>
 
       {/* My Books Section */}
@@ -184,12 +182,10 @@ const ProfileScreen = () => {
             />
           </View>
           
-          <Link href="/edit-profile" asChild>
-            <Pressable className="flex-row justify-between items-center py-3 border-b border-gray-100">
-              <Text className="text-gray-700">Edit Profile</Text>
-              <Ionicons name="chevron-forward" size={18} color="#9ca3af" />
-            </Pressable>
-          </Link>
+          <Pressable className="flex-row justify-between items-center py-3 border-b border-gray-100" onPress={() => router.push('/(tabs)/profile/EditProfile')}>
+            <Text className="text-gray-700">Edit Profile</Text>
+            <Ionicons name="chevron-forward" size={18} color="#9ca3af" />
+          </Pressable>
           
           <Pressable 
             onPress={logout}

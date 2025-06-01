@@ -2,12 +2,14 @@ import { View, Text, TextInput, Pressable } from 'react-native';
 import React, { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
+import { supabase } from '../../lib/supabase'
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false)
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
@@ -17,6 +19,17 @@ const SignIn = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
+  async function signInWithEmail() {
+    if(!validate()) return;
+    setLoading(true)
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    })
+    if (error) alert(error.message)
+    setLoading(false)
+  }
 
   return (
     <View className="flex-1 bg-white p-6 justify-center">
@@ -62,8 +75,9 @@ const SignIn = () => {
 
       {/* Sign In Button */}
       <Pressable
-        onPress={() => validate() && console.log('Sign in')}
+        onPress={() => signInWithEmail()}
         className="bg-[dodgerblue] py-3 rounded-lg items-center mb-4"
+        disabled={loading}
       >
         <Text className="text-white font-bold text-lg">Sign In</Text>
       </Pressable>
@@ -72,7 +86,9 @@ const SignIn = () => {
       <View className="flex-row justify-center">
         <Text className="text-gray-600">Don't have an account? </Text>
         <Link href="/SignUp" asChild>
-          <Pressable>
+          <Pressable
+          disabled={loading}
+          >
             <Text className="text-[dodgerblue] font-medium">Sign Up</Text>
           </Pressable>
         </Link>

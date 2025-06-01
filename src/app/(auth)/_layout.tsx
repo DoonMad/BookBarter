@@ -2,7 +2,7 @@ import { View, Text } from 'react-native'
 import React from 'react'
 import { Stack } from 'expo-router'
 
-const Auth = () => {
+const AuthLayout  = () => {
   return (
     <Stack>
       
@@ -10,4 +10,4 @@ const Auth = () => {
   )
 }
 
-export default Auth
+export default AuthLayout

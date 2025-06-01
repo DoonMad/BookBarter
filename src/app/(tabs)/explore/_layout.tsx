@@ -11,23 +11,23 @@ const Explore = () => {
         <Stack.Screen 
         name="index"
         options={{
-                  title: 'Explore',
-                  // headerShown: false,
-                  headerRight: () => (
-                    <Link href="/modal" asChild>
-                      <Pressable>
-                        {({ pressed }) => (
-                          <FontAwesome
-                            name="bell"
-                            size={25}
-                            color={Colors[colorScheme ?? 'light'].text}
-                            style={{opacity: pressed ? 0.5 : 1 }}
-                          />
-                        )}
-                      </Pressable>
-                    </Link>
-                  ),
-                }}
+          title: 'Explore',
+          // headerShown: false,
+          headerRight: () => (
+            <Link href="/modal" asChild>
+              <Pressable>
+                {({ pressed }) => (
+                  <FontAwesome
+                    name="bell"
+                    size={25}
+                    color={Colors[colorScheme ?? 'light'].text}
+                    style={{opacity: pressed ? 0.5 : 1 }}
+                  />
+                )}
+              </Pressable>
+            </Link>
+          ),
+        }}
         />
     </Stack>
   )

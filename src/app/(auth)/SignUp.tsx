@@ -2,6 +2,7 @@ import { View, Text, TextInput, Pressable } from 'react-native';
 import React, { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
+import { supabase } from '@/src/lib/supabase';
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -12,6 +13,7 @@ const SignUp = () => {
     location: ''
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false)
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
@@ -21,6 +23,20 @@ const SignUp = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
+  async function signUpWithEmail() {
+    setLoading(true)
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.signUp({
+      email: formData.email,
+      password: formData.password,
+    })
+    if (error) alert(error.message)
+    if (!session) alert('Please check your inbox for email verification!')
+    setLoading(false)
+  }
 
   return (
     <View className="flex-1 bg-white p-6 justify-center">
