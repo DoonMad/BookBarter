@@ -1,20 +1,21 @@
 import { View, Text, Image, Pressable } from 'react-native';
-import { Request } from '@/assets/data/requests';
+// import { Request } from '@/assets/data/requests';
 import books from '@/assets/data/books';
 import users from '@/assets/data/users';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { Request, useBookById, useUserbyId } from '../api';
 
 type RequestListItemProps = {
   request: Request;
   type: 'incoming' | 'outgoing';
-  currentUserId: number;
+  currentUserId: string;
 };
 
 const RequestListItem = ({ request, type, currentUserId }: RequestListItemProps) => {
-  const book = books.find((b) => b.id === request.bookId);
-  const requester = users.find((u) => u.id === request.requesterId);
-  const owner = users.find((u) => u.id === book?.ownerId);
+  const {data: book} = useBookById(request.book_id);
+  const {data: requester} = useUserbyId(request.requester_id);
+  const {data: owner} = useUserbyId(book?.owner_id);
 
   if (!book || !requester || !owner) return null;
 
@@ -60,7 +61,7 @@ const RequestListItem = ({ request, type, currentUserId }: RequestListItemProps)
 
         <View className="flex-row justify-between items-center mt-2">
           <Text className="text-xs text-gray-500">
-            {new Date(request.timestamp).toLocaleDateString('en-US', { 
+            {new Date(request.updated_at).toLocaleDateString('en-US', { 
               month: 'short', 
               day: 'numeric',
               hour: '2-digit',

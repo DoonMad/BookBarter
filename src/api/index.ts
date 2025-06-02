@@ -2,7 +2,7 @@
 import { useAuth } from "../contexts/AuthProvider";
 import { supabase } from "../lib/supabase";
 import type { Database } from "../lib/supabase.types"
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 // const [books, setBooks] = useState<any[]>([]);
 
@@ -183,3 +183,30 @@ export const useAllRequests = () => {
     },
   });
 };
+
+export const useFindExistingRequest = (bookId?: string, requesterId?: string, intent?: string) =>{
+  return useQuery({
+    queryKey: ['findExistingRequest', bookId, requesterId, intent],
+    queryFn: async (): Promise<Request> => {
+      const { data, error } = await supabase.from('requests').select('*')
+      .eq('book_id', bookId)
+      .eq('requester_id', requesterId)
+      .eq('type', intent)
+      .single();
+      if (error) {
+        throw new Error(error.message);
+      }
+      return data ?? null;
+    },
+    enabled: !!bookId && !!requesterId && !!intent,
+  })
+}
+
+export const useInsertBook = () => {
+  return useMutation({
+    async mutationFn(data: Book) {
+      const {error, data: newBook} = await supabase.from('books').insert(data);
+
+    }
+  })
+}

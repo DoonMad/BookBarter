@@ -1,22 +1,25 @@
 import { FlatList, View, Text } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { Stack } from 'expo-router';
+import { Redirect, Stack } from 'expo-router';
 import { useRequest } from '../contexts/RequestProvider';
 import RequestListItem from '../components/RequestListItem';
 import books from '@/assets/data/books';
+import { useIncomingRequestList, useOutgoingRequestList } from '../api';
+import { useAuth } from '../contexts/AuthProvider';
 
 const Tab = createMaterialTopTabNavigator();
 
 export default function ModalScreen() {
   const { requests } = useRequest();
-  const currentUserId = 1; // Temporary - replace with actual auth later
+  const {session, sessionLoading} = useAuth(); // Temporary - replace with actual auth later
+  if(!session){
+    return <Redirect href={'/'} />
+  }
+  const currentUserId = session?.user.id;
 
   // Filter requests based on current user
-  const outgoingRequests = requests.filter(request => request.requesterId === currentUserId);
-  const incomingRequests = requests.filter(request => {
-    const book = books.find(b => b.id === request.bookId);
-    return book?.ownerId === currentUserId;
-  });
+  const {data: outgoingRequests} = useOutgoingRequestList(currentUserId)
+  const {data: incomingRequests} = useIncomingRequestList(currentUserId)
 
   return (
     <View className="flex-1 bg-gray-50">

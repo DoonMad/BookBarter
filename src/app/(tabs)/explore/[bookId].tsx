@@ -6,7 +6,7 @@ import { Share } from 'react-native';
 // import books from '@/assets/data/books';
 // import users from '@/assets/data/users';
 // import {Request} from '@/assets/data/requests';
-import { Request } from '@/src/api/index'
+import { Request, useFindExistingRequest } from '@/src/api/index'
 import { useRequest } from '@/src/contexts/RequestProvider';
 import { useState } from 'react';
 import { useAuth } from '@/src/contexts/AuthProvider';
@@ -85,6 +85,13 @@ const BookDetailsScreen = () => {
     }
 
     console.log(intent)
+    const newRequest = useFindExistingRequest(book.id, currentUserId, intent);
+    if(newRequest){
+      alert("Request already sent!");
+    }
+    else{
+      
+    }
     // const newRequest: Request = {
     //   book_id: book.id,
     //   requester_id: currentUserId!,
