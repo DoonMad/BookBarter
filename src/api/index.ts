@@ -36,8 +36,22 @@ export const useBookList = () => {
   })
 }
 
-export const useBookById = (id?: string) => {
+export const useBookListFromOwnerId = (ownerId?: string) => {
+  return useQuery({
+    queryKey: ['books', ownerId],
+    queryFn: async (): Promise<Book[]> => {
+      const { data: booksData, error } = await supabase.from('books').select('*').eq('owner_id', ownerId);
+      if(error){
+        throw new Error(error.message);
+      }
+      return booksData ?? [];
+    },
+    enabled: !!ownerId,
+  })
+}
 
+export const useBookById = (id?: string) => {
+  
   return useQuery({
     queryKey: ['book', id],
     queryFn: async (): Promise<Book> => {
@@ -51,9 +65,46 @@ export const useBookById = (id?: string) => {
   })
 }
 
+export const useBooksByIds = (bookIds?: string[]) => {
+  
+  return useQuery({
+    queryKey: ['booksByIds', bookIds],
+    queryFn: async (): Promise<Book[]> => {
+      if (bookIds?.length === 0) return [];
+
+      const { data, error } = await supabase
+        .from('books')
+        .select('*')
+        .in('id', bookIds || ['']);
+
+      if (error) throw new Error(error.message);
+      return data ?? [];
+    },
+    enabled: !!bookIds && bookIds.length > 0,
+  })
+}
+
+export const useUsersByIds = (userIds?: string[]) => {
+  
+  return useQuery({
+    queryKey: ['usersByIds', userIds],
+    queryFn: async (): Promise<User[]> => {
+      if (userIds?.length === 0) return [];
+
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .in('id', userIds || ['']);
+
+      if (error) throw new Error(error.message);
+      return data ?? [];
+    },
+    enabled: !!userIds && userIds.length > 0,
+  })
+}
 
 export const useUserbyId = (id?: string) => {
-
+  
   return useQuery({
     queryKey: ['book', id],
     queryFn: async (): Promise<User> => {
@@ -66,3 +117,69 @@ export const useUserbyId = (id?: string) => {
     enabled: !!id,
   })
 }
+
+export const useIncomingRequestList = (userId?: string) => {
+  return useQuery({
+    queryKey: ['incomingRequests', userId],
+    queryFn: async (): Promise<Request[]> => {
+      const { data, error } = await supabase
+        .from('requests')
+        .select('*, books!inner(*)') // inner join with books table
+        .eq('books.owner_id', userId);
+      if(error){
+        throw new Error(error.message);
+      }
+      return data ?? [];
+    },
+    enabled: !!userId,
+  })
+}
+
+export const useOutgoingRequestList = (userId?: string) => {
+  return useQuery({
+    queryKey: ['outgoingRequests', userId],
+    queryFn: async (): Promise<Request[]> => {
+      const { data, error } = await supabase.from('requests').select('*').eq('requester_id', userId);
+      if(error){
+        throw new Error(error.message);
+      }
+      return data ?? [];
+    },
+    enabled: !!userId,
+  })
+}
+
+export const useApprovedRequestList = (currentUserId?: string) => {
+  return useQuery({
+    queryKey: ['approvedRequests', currentUserId],
+    enabled: !!currentUserId,
+    queryFn: async (): Promise<Request[]> => {
+      const { data, error } = await supabase
+        .from('requests')
+        .select('*, books!inner(owner_id)') // join with books to get owner_id
+        .eq('status', 'Approved')
+        .or(`requester_id.eq.${currentUserId},books.owner_id.eq.${currentUserId}`); // filter by current user as requester OR owner
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return data ?? [];
+    },
+  });
+};
+
+export const useAllRequests = () => {
+  return useQuery({
+    queryKey: ['allRequests'],
+    queryFn: async (): Promise<Request[]> => {
+      const { data, error } = await supabase.from('requests').select('*');
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return data ?? [];
+    },
+  });
+};

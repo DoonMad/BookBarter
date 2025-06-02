@@ -2,26 +2,33 @@ import { View, Text, Image, FlatList, Pressable, Switch } from 'react-native';
 import { FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Link, router } from 'expo-router';
 import users from '@/assets/data/users';
-import books from '@/assets/data/books';
-import requests from '@/assets/data/requests';
-import { useState } from 'react';
+// import books from '@/assets/data/books';
+// import requests from '@/assets/data/requests';
+import { Book, Request, useAllRequests, useBooksByIds, useUsersByIds } from '@/src/api';
+import { useMemo, useState } from 'react';
 import { supabase } from '@/src/lib/supabase';
+import { useAuth } from '@/src/contexts/AuthProvider';
+import { useApprovedRequestList, useBookListFromOwnerId, useUserbyId } from '@/src/api';
 
 const ProfileScreen = () => {
-  const currentUserId = 1; // Will be replaced with context later
+  const {session, sessionLoading} = useAuth(); // Will be replaced with context later
   const [isDarkMode, setIsDarkMode] = useState(false);
   
   // Get current user data
-  const currentUser = users.find(user => user.id === currentUserId);
+  const currentUserId = session?.user.id;
+  const {data: currentUser} = useUserbyId(currentUserId);
   
   // Get user's books
-  const userBooks = books.filter(book => book.ownerId === currentUserId);
+  // const userBooks = books.filter(book => book.ownerId === currentUserId);
+  const {data: userBooks = []} = useBookListFromOwnerId(currentUserId);
   
   // Get Approved requests
-  const ApprovedRequests = requests.filter(request => 
-    request.status === 'Approved' && 
-    (request.requesterId === currentUserId || books.find(b => b.id === request.bookId)?.ownerId === currentUserId)
-  );
+  // const ApprovedRequests = requests.filter(request => 
+  //   request.status === 'Approved' && 
+  //   (request.requesterId === currentUserId || books.find(b => b.id === request.bookId)?.owner_id === currentUserId)
+  // );
+  const {data: ApprovedRequests = []} = useApprovedRequestList(currentUserId)
+  const {data: allRequests = []} = useAllRequests();
 
   // Mock logout function
   const logout = () => {
@@ -31,11 +38,20 @@ const ProfileScreen = () => {
   };
 
   // Book Card Component
-  const BookCard = ({ book }: { book: typeof books[0] }) => {
-    const bookRequests = requests.filter(req => req.bookId === book.id);
-    const status = bookRequests.some(req => req.status === 'Approved') ? 'Approved' :
-                  bookRequests.some(req => req.status === 'Approved') ? 'Requested' : 'Available';
-    
+  type BookCardProps = {
+    book: Book; // Replace `Book` with your book type
+    requests: Request[]; // Replace with your actual request type
+  };
+
+  const BookCard = ({ book, requests }: BookCardProps) => {
+    const bookRequests = requests.filter(req => req.book_id === book.id);
+
+    const status = bookRequests.some(req => req.status === 'Approved')
+      ? 'Approved'
+      : bookRequests.length > 0
+      ? 'Requested'
+      : 'Available';
+
     return (
       <View className="flex-row border border-gray-200 rounded-lg p-3 mb-3 bg-white">
         <Image 
@@ -45,7 +61,7 @@ const ProfileScreen = () => {
         <View className="ml-3 flex-1">
           <Text className="font-semibold text-gray-900">{book.title}</Text>
           <Text className="text-sm text-gray-600 mb-1">by {book.author}</Text>
-          
+
           <View className="flex-row items-center mb-2">
             <View className={`px-2 py-1 rounded-full ${
               book.intent === 'Giveaway' ? 'bg-purple-100' : 'bg-amber-100'
@@ -56,7 +72,7 @@ const ProfileScreen = () => {
                 {book.intent}
               </Text>
             </View>
-            
+
             <View className={`px-2 py-1 rounded-full ml-2 ${
               status === 'Available' ? 'bg-green-100' :
               status === 'Requested' ? 'bg-blue-100' : 'bg-gray-100'
@@ -69,7 +85,7 @@ const ProfileScreen = () => {
               </Text>
             </View>
           </View>
-          
+
           <View className="flex-row justify-end">
             <Pressable className="p-2 mr-2">
               <FontAwesome name="edit" size={16} color="#3b82f6" />
@@ -83,6 +99,17 @@ const ProfileScreen = () => {
     );
   };
 
+  const bookIds = useMemo(() => ApprovedRequests?.map(r => r.book_id) ?? [], [ApprovedRequests]);
+  const { data: books = [] } = useBooksByIds(bookIds);
+  
+  const userIds = useMemo(() => {
+  return ApprovedRequests?.map(req => {
+    const book = books.find(b => b.id === req.book_id);
+    return req.requester_id === currentUserId ? book?.owner_id : req.requester_id;
+  }).filter(Boolean) ?? [];
+}, [ApprovedRequests, books]);
+
+  const { data: users = [] } = useUsersByIds(userIds.filter((id): id is string => typeof id === 'string'));
   return (
     <View className="flex-1 bg-gray-50">
       {/* User Profile Card */}
@@ -122,7 +149,9 @@ const ProfileScreen = () => {
         {userBooks.length > 0 ? (
           <FlatList
             data={userBooks}
-            renderItem={({ item }) => <BookCard book={item} />}
+            renderItem={({ item }) => (
+              <BookCard book={item} requests={allRequests} />
+            )}
             keyExtractor={(item) => item.id.toString()}
             scrollEnabled={false}
           />
@@ -145,28 +174,27 @@ const ProfileScreen = () => {
           <Text className="text-lg font-bold text-gray-900 mb-3">Book History</Text>
           <View className="bg-white rounded-lg p-4">
             {ApprovedRequests.map((request) => {
-              const book = books.find(b => b.id === request.bookId);
-              const otherUser = users.find(u => 
-                u.id === (request.requesterId === currentUserId ? 
-                  book?.ownerId : request.requesterId)
-              );
-              
-              const action = request.requesterId === currentUserId ? 
-                'received' : 'gave away';
-              
-              return (
-                <View key={request.id} className="flex-row items-center py-2 border-b border-gray-100 last:border-0">
-                  <MaterialIcons 
-                    name={action === 'received' ? 'call-received' : 'call-made'} 
-                    size={18} 
-                    color={action === 'received' ? '#10b981' : '#3b82f6'} 
-                  />
-                  <Text className="ml-2 text-gray-700">
-                    You {action} <Text className="font-medium">'{book?.title}'</Text> {action === 'received' ? 'from' : 'to'} {otherUser?.name}
-                  </Text>
-                </View>
-              );
-            })}
+            const book = books.find(b => b.id === request.book_id);
+
+            const isRequester = request.requester_id === currentUserId;
+            const otherUserId = isRequester ? book?.owner_id : request.requester_id;
+            const otherUser = users.find(u => u.id === otherUserId);
+
+            const action = isRequester ? 'received' : 'gave away';
+
+            return (
+              <View key={request.id} className="flex-row items-center py-2 border-b border-gray-100 last:border-0">
+                <MaterialIcons 
+                  name={action === 'received' ? 'call-received' : 'call-made'} 
+                  size={18} 
+                  color={action === 'received' ? '#10b981' : '#3b82f6'} 
+                />
+                <Text className="ml-2 text-gray-700">
+                  You {action} <Text className="font-medium">'{book?.title}'</Text> {action === 'received' ? 'from' : 'to'} {otherUser?.name}
+                </Text>
+              </View>
+            );
+          })}
           </View>
         </View>
       )}
