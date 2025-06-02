@@ -31,13 +31,22 @@ const SignUp = () => {
   async function signUpWithEmail() {
     if (!validate()) return;
     setLoading(true)
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.signUp({
+
+    console.log(formData)
+
+    const { data: { session }, error } = await supabase.auth.signUp({
       email: formData.email,
       password: formData.password,
+      phone: formData.phone,
+      options: {
+        data: {
+          name: formData.name,
+          location: formData.location,
+          avatar: null
+        }
+      }
     })
+
     if (error) alert(error.message)
     if (!session) alert('Please check your inbox for email verification!')
     setLoading(false)

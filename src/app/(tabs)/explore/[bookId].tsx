@@ -3,14 +3,16 @@ import { Stack, useLocalSearchParams } from 'expo-router';
 import { Ionicons, MaterialIcons, FontAwesome } from '@expo/vector-icons';
 import * as Linking from 'expo-linking';
 import { Share } from 'react-native';
-import books from '@/assets/data/books';
-import users from '@/assets/data/users';
-import {Request} from '@/assets/data/requests';
+// import books from '@/assets/data/books';
+// import users from '@/assets/data/users';
+// import {Request} from '@/assets/data/requests';
+import { Request } from '@/src/api/index'
 import { useRequest } from '@/src/contexts/RequestProvider';
 import { useState } from 'react';
+import { useAuth } from '@/src/contexts/AuthProvider';
+import { useBookById, useUserbyId } from '@/src/api';
 
 const { width: screenWidth } = Dimensions.get('window');
-const currentUserId = 1; // temporary
 
 const ImageCarousel = ({ images }: { images: string[] }) => {
   return (
@@ -52,9 +54,12 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
 
 const BookDetailsScreen = () => {
   const { bookId } = useLocalSearchParams();
-  const book = books.find((b) => b.id.toString() === bookId);
-  const owner = users.find((u) => u.id === book?.ownerId);
+  const {data: book} = useBookById(typeof bookId === 'string' ? bookId : bookId[0]);
+  const {data: owner} = useUserbyId(book?.owner_id);
   const { requests, addRequest } = useRequest();
+  const {session} = useAuth()
+  const currentUserId = session?.user.id;
+
 
   if (!book) {
     return (
@@ -68,8 +73,8 @@ const BookDetailsScreen = () => {
     if (!intent) return;
     const existingRequest = requests.find(
       (r) =>
-        r.bookId === book.id &&
-        r.requesterId === currentUserId && // temporary
+        r.book_id === book.id &&
+        r.requester_id === currentUserId && // temporary
         r.type === intent
     );
 
@@ -80,16 +85,15 @@ const BookDetailsScreen = () => {
     }
 
     console.log(intent)
-    const newRequest: Request = {
-      id:  Date.now() , // temporary;
-      bookId: book.id,
-      requesterId: 1, // replace with actual user ID later
-      type: intent === 'Exchange' || intent === 'Giveaway' ? intent : 'Exchange', // type-safe
-      status: 'Pending',
-      timestamp: new Date().toISOString(), // convert Date to string
-    };
+    // const newRequest: Request = {
+    //   book_id: book.id,
+    //   requester_id: currentUserId!,
+    //   type: intent === 'Exchange' || intent === 'Giveaway' ? intent : 'Exchange', // type-safe
+    //   status: 'Pending',
+    // };
 
-    addRequest(newRequest);
+    // console.log(newRequest);
+    // addRequest(newRequest);
   };
 
 

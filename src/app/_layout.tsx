@@ -12,6 +12,7 @@ import { useColorScheme } from '@/src/components/useColorScheme';
 import "@/src/global.css"
 import AuthProvider, { useAuth } from '../contexts/AuthProvider';
 import { ActivityIndicator } from 'react-native-paper';
+import QueryProvider from '../contexts/QueryProvider';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -52,7 +53,7 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
-  const {session, sessionLoading} = useAuth();
+  // const {session, sessionLoading} = useAuth();
   // if(sessionLoading){
   //   return <ActivityIndicator />
   // }
@@ -63,14 +64,16 @@ function RootLayoutNav() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <AuthProvider>
-        <RequestProvider>
-          <Stack>
-            <Stack.Screen name="index"/>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="(auth)" options={{ headerShown: false }}/>
-            <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-          </Stack>
-        </RequestProvider>
+        <QueryProvider>
+          <RequestProvider>
+            <Stack>
+              <Stack.Screen name="index"/>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="(auth)" options={{ headerShown: false }}/>
+              <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+            </Stack>
+          </RequestProvider>
+        </QueryProvider>
       </AuthProvider>
     </ThemeProvider>
   );

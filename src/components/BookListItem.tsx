@@ -2,7 +2,9 @@
 import { View, Text, Image, StyleSheet, Pressable } from 'react-native';
 // import { Book } from '@/types';
 import { router } from 'expo-router';
-import { Book } from '@/assets/data/books';
+// import { Book } from '@/assets/data/books';
+import type { Book } from '@/src/api/index';
+
 
 type BookListItemProps = {
   book: Book;

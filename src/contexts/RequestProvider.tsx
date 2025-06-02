@@ -1,6 +1,7 @@
 import { View, Text } from 'react-native'
 import React, { createContext, useState, useContext } from 'react'
-import { Request } from '@/assets/data/requests'
+// import { Request } from '@/assets/data/requests'
+import { Request } from '@/src/api/index'
 import { randomUUID } from 'expo-crypto';
 
 type RequestContextType = {

@@ -5,13 +5,6 @@ import { useAuth } from '@/src/contexts/AuthProvider'
 import { ActivityIndicator } from 'react-native-paper'
 
 const ProfileLayout  = () => {
-  const {session, sessionLoading} = useAuth();
-  if(sessionLoading){
-    return <ActivityIndicator />
-  }
-  if(!session){
-    return <Redirect href="/" />
-  }
   return (
     <Stack>
       <Stack.Screen

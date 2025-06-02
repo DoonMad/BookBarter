@@ -4,7 +4,7 @@ export type Book = {
   author: string;
   images: string[];
   condition: 'Like New' | 'Good' | 'Fair' | 'Poor';
-  ownerId: number; // Refers to User.id
+  owner_id: number; // Refers to User.id
   intent: 'Giveaway' | 'Exchange';
   description?: string;
   tags?: string[];
@@ -20,7 +20,7 @@ const books: Book[] = [
       'https://images.unsplash.com/photo-1588776814546-79b10f86e5f4',
     ],
     condition: 'Like New',
-    ownerId: 1,
+    owner_id: 1,
     intent: 'Exchange',
     description: 'A guide to building good habits and breaking bad ones.',
     tags: ['Self-Help', 'Productivity'],
@@ -34,7 +34,7 @@ const books: Book[] = [
       'https://images.meesho.com/images/products/159817845/mzwwj_512.webp',
     ],
     condition: 'Good',
-    ownerId: 2,
+    owner_id: 2,
     intent: 'Giveaway',
     description: 'A novel about a shepherd’s quest for his destiny.',
     tags: ['Fiction', 'Philosophy', 'Spiritual'],
@@ -48,7 +48,7 @@ const books: Book[] = [
       'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa',
     ],
     condition: 'Fair',
-    ownerId: 3,
+    owner_id: 3,
     intent: 'Exchange',
     description: 'Guide to writing cleaner, more maintainable code.',
     tags: ['Programming', 'Software Engineering'],
@@ -62,7 +62,7 @@ const books: Book[] = [
       'https://images.unsplash.com/photo-1600195077072-245b07bda7dd',
     ],
     condition: 'Poor',
-    ownerId: 4,
+    owner_id: 4,
     intent: 'Giveaway',
     description: 'History of humankind from ancient to modern times.',
     tags: ['History', 'Anthropology', 'Non-Fiction'],
@@ -76,7 +76,7 @@ const books: Book[] = [
       'https://images.unsplash.com/photo-1556905055-8f358a7a47b2',
     ],
     condition: 'Like New',
-    ownerId: 5,
+    owner_id: 5,
     intent: 'Giveaway',
     description: 'Magical adventures of a young wizard.',
     tags: ['Fantasy', 'Adventure'],
@@ -89,7 +89,7 @@ const books: Book[] = [
       'https://images-na.ssl-images-amazon.com/images/I/71QKQ9mwV7L.jpg',
     ],
     condition: 'Good',
-    ownerId: 6,
+    owner_id: 6,
     intent: 'Exchange',
     description: 'A counterintuitive approach to living a good life.',
     tags: ['Self-Help', 'Psychology'],
@@ -102,7 +102,7 @@ const books: Book[] = [
       'https://images-na.ssl-images-amazon.com/images/I/81BPKT8ZzsL.jpg',
     ],
     condition: 'Like New',
-    ownerId: 7,
+    owner_id: 7,
     intent: 'Giveaway',
     description: 'Rules for focused success in a distracted world.',
     tags: ['Productivity', 'Work'],
