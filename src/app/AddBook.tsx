@@ -4,6 +4,8 @@ import { FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { RadioButton } from 'react-native-paper';
 import { router } from 'expo-router';
+import { useInsertBook } from '../api';
+import { useAuth } from '../contexts/AuthProvider';
 
 const AddBook = () => {
   const [title, setTitle] = useState('');
@@ -14,6 +16,9 @@ const AddBook = () => {
   const [intent, setIntent] = useState<'Giveaway' | 'Exchange'>('Giveaway');
   const [images, setImages] = useState<string[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const {mutate: insertBook, error: insertBookError} = useInsertBook();
+  const {session, sessionLoading} = useAuth();
+
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
@@ -28,13 +33,17 @@ const AddBook = () => {
 
   const handleSubmit = () => {
     if (!validate()) return;
+    if(!session?.user.id){
+      router.push('/')
+      return;
+    }
     
     const newBook = {
       title,
       author,
-      images,
+      images: ['https://img.freepik.com/free-vector/books-stack-realistic_1284-4735.jpg?semt=ais_hybrid&w=740', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTktoNpsu4s9DMHTtXkuuItwSp2ArmLW4YjdA&s'],
       condition,
-      ownerId: 1, // Will be replaced with actual user ID
+      owner_id: session?.user?.id, // Will be replaced with actual user ID
       intent,
       description: description || undefined,
       tags: tags ? tags.split(',').map(tag => tag.trim()) : undefined,
@@ -42,7 +51,13 @@ const AddBook = () => {
     
     console.log('Submitting book:', newBook);
     console.log("here")
+    insertBook(newBook, {onSuccess: () => console.log('success'), onError: (error) => console.log(error.message)});
     // Here you would typically send this to your backend
+    if(insertBookError){
+      console.log(insertBookError)
+      return;
+    }
+    else
     Alert.alert('Success', 'Book added successfully!');
     router.push('/(tabs)/explore')
   };

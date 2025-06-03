@@ -1,4 +1,4 @@
-import { View, Text, Image, FlatList, Pressable, Switch } from 'react-native';
+import { View, Text, Image, FlatList, Pressable, Switch, ScrollView } from 'react-native';
 import { FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Link, router } from 'expo-router';
 import users from '@/assets/data/users';
@@ -111,7 +111,7 @@ const ProfileScreen = () => {
 
   const { data: users = [] } = useUsersByIds(userIds.filter((id): id is string => typeof id === 'string'));
   return (
-    <View className="flex-1 bg-gray-50">
+    <ScrollView className="flex-1 bg-gray-50">
       {/* User Profile Card */}
       <View className="bg-white p-6 rounded-b-xl shadow-sm">
         <View className="items-center mb-4">
@@ -226,7 +226,7 @@ const ProfileScreen = () => {
           </Pressable>
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

@@ -2,7 +2,7 @@
 import { useAuth } from "../contexts/AuthProvider";
 import { supabase } from "../lib/supabase";
 import type { Database } from "../lib/supabase.types"
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 // const [books, setBooks] = useState<any[]>([]);
 
@@ -19,6 +19,9 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 export type User = Database["public"]["Tables"]["users"]["Row"];
 export type Book = Database["public"]["Tables"]["books"]["Row"];
 export type Request = Database["public"]["Tables"]["requests"]["Row"];
+export type InsertUser = Database["public"]["Tables"]["users"]["Insert"];
+export type InsertBook = Database["public"]["Tables"]["books"]["Insert"];
+export type InsertRequest = Database["public"]["Tables"]["requests"]["Insert"];
 
 
 export const useBookList = () => {
@@ -203,10 +206,18 @@ export const useFindExistingRequest = (bookId?: string, requesterId?: string, in
 }
 
 export const useInsertBook = () => {
+  const client = useQueryClient();
   return useMutation({
-    async mutationFn(data: Book) {
+    async mutationFn(data: InsertBook) {
       const {error, data: newBook} = await supabase.from('books').insert(data);
-
+      console.log('I am sending the book.')
+      if(error) {
+        throw new Error(error.message);
+      }
+      return newBook;
+    },
+    async onSuccess() {
+      await client.invalidateQueries({queryKey: ['books']})
     }
   })
 }

@@ -71,12 +71,7 @@ const BookDetailsScreen = () => {
 
   const handleRequest = (intent?: string) => {
     if (!intent) return;
-    const existingRequest = requests.find(
-      (r) =>
-        r.book_id === book.id &&
-        r.requester_id === currentUserId && // temporary
-        r.type === intent
-    );
+    const {data: existingRequest} = useFindExistingRequest(book.id, currentUserId, intent);
 
     if (existingRequest) {
       console.log("Request already sent!");
@@ -85,21 +80,18 @@ const BookDetailsScreen = () => {
     }
 
     console.log(intent)
-    const newRequest = useFindExistingRequest(book.id, currentUserId, intent);
-    if(newRequest){
-      alert("Request already sent!");
-    }
-    else{
-      
-    }
-    // const newRequest: Request = {
-    //   book_id: book.id,
-    //   requester_id: currentUserId!,
-    //   type: intent === 'Exchange' || intent === 'Giveaway' ? intent : 'Exchange', // type-safe
-    //   status: 'Pending',
-    // };
-
-    // console.log(newRequest);
+    const newRequest: Request = {
+      id: '', // Assign a unique id if available, or leave as empty string if backend generates it
+      book_id: book.id,
+      requester_id: currentUserId!,
+      type: intent === 'Exchange' || intent === 'Giveaway' ? intent : 'Exchange', // type-safe
+      status: 'Pending',
+      created_at: new Date().toISOString(), // don't wanna put this myself...
+      updated_at: new Date().toISOString(), // don't wanna put this myself...
+      message: null, // or provide a default message if needed
+    };
+    addRequest(newRequest);
+    console.log(newRequest);
     // addRequest(newRequest);
   };
 
