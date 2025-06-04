@@ -187,23 +187,24 @@ export const useAllRequests = () => {
   });
 };
 
-export const useFindExistingRequest = (bookId?: string, requesterId?: string, intent?: string) =>{
-  return useQuery({
-    queryKey: ['findExistingRequest', bookId, requesterId, intent],
-    queryFn: async (): Promise<Request> => {
-      const { data, error } = await supabase.from('requests').select('*')
+export const useFindExistingRequest = () => {
+  const queryFn = async (bookId: string, requesterId: string, intent: string): Promise<Request | null> => {
+    const { data, error } = await supabase
+      .from('requests')
+      .select('*')
       .eq('book_id', bookId)
       .eq('requester_id', requesterId)
       .eq('type', intent)
-      .single();
-      if (error) {
-        throw new Error(error.message);
-      }
-      return data ?? null;
-    },
-    enabled: !!bookId && !!requesterId && !!intent,
-  })
-}
+      .maybeSingle(); // Using maybeSingle instead of single
+    
+    if (error) throw new Error(error.message);
+    return data;
+  };
+
+  return {
+    checkRequest: queryFn // Expose as a regular async function
+  };
+};
 
 export const useInsertBook = () => {
   const client = useQueryClient();
@@ -218,6 +219,23 @@ export const useInsertBook = () => {
     },
     async onSuccess() {
       await client.invalidateQueries({queryKey: ['books']})
+    }
+  })
+}
+
+export const useInsertRequest = () => {
+  const client = useQueryClient();
+  return useMutation({
+    async mutationFn(data: InsertRequest) {
+      const {error, data: newReq} = await supabase.from('requests').insert(data);
+      console.log('I am sending the req.')
+      if(error) {
+        throw new Error(error.message);
+      }
+      return newReq;
+    },
+    async onSuccess() {
+      await client.invalidateQueries({queryKey: ['requests']})
     }
   })
 }

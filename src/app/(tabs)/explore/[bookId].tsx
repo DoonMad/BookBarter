@@ -6,11 +6,12 @@ import { Share } from 'react-native';
 // import books from '@/assets/data/books';
 // import users from '@/assets/data/users';
 // import {Request} from '@/assets/data/requests';
-import { Request, useFindExistingRequest } from '@/src/api/index'
+import { Request, useFindExistingRequest, useInsertRequest } from '@/src/api/index'
 import { useRequest } from '@/src/contexts/RequestProvider';
 import { useState } from 'react';
 import { useAuth } from '@/src/contexts/AuthProvider';
 import { useBookById, useUserbyId } from '@/src/api';
+import { supabase } from '@/src/lib/supabase';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -59,6 +60,9 @@ const BookDetailsScreen = () => {
   const { requests, addRequest } = useRequest();
   const {session} = useAuth()
   const currentUserId = session?.user.id;
+  const {mutate: insertRequest} = useInsertRequest();
+  // const { refetch } = useFindExistingRequest();
+  const { checkRequest } = useFindExistingRequest();
 
 
   if (!book) {
@@ -69,29 +73,64 @@ const BookDetailsScreen = () => {
     );
   }
 
-  const handleRequest = (intent?: string) => {
+  const handleRequest = async (intent?: string) => {
     if (!intent) return;
-    const {data: existingRequest} = useFindExistingRequest(book.id, currentUserId, intent);
+    // const {data: existingRequest} = useFindExistingRequest(book.id, currentUserId, intent);
 
-    if (existingRequest) {
-      console.log("Request already sent!");
-      alert("Request already sent!");
-      return; // don't create a duplicate
+    // if (existingRequest) {
+    //   console.log("Request already sent!");
+    //   alert("Request already sent!");
+    //   return; // don't create a duplicate
+    // }
+    if(!currentUserId) return;
+    try {
+      // Check for existing request directly in the database
+      const existingRequest = await checkRequest(book.id, currentUserId, intent);
+      
+      if (existingRequest) {
+        alert("Request Already Sent" + "You've already sent this type of request for this book.");
+        return;
+      }
+
+      const newRequest = {
+        book_id: book.id,
+        requester_id: currentUserId,
+        type: intent,
+        status: 'Pending',
+      };
+      
+      // const { error } = await supabase.from('requests').insert(newRequest);
+      console.log(newRequest)
+      insertRequest(newRequest, {
+        onSuccess: () => console.log('Request added'),
+        onError: (error) => console.log(error.message)
+      })
+    }
+    //   if (error) throw error;
+    //   alert("Success, " + "Request sent successfully!");
+    // } 
+    catch {
+      alert("Error");
     }
 
-    console.log(intent)
-    const newRequest: Request = {
-      id: '', // Assign a unique id if available, or leave as empty string if backend generates it
-      book_id: book.id,
-      requester_id: currentUserId!,
-      type: intent === 'Exchange' || intent === 'Giveaway' ? intent : 'Exchange', // type-safe
-      status: 'Pending',
-      created_at: new Date().toISOString(), // don't wanna put this myself...
-      updated_at: new Date().toISOString(), // don't wanna put this myself...
-      message: null, // or provide a default message if needed
-    };
-    addRequest(newRequest);
-    console.log(newRequest);
+    // console.log(intent)
+    // const newRequest = {
+    //   // id: '', // Assign a unique id if available, or leave as empty string if backend generates it
+    //   book_id: book.id,
+    //   requester_id: currentUserId!,
+    //   type: intent === 'Exchange' || intent === 'Giveaway' ? intent : 'Exchange', // type-safe
+    //   status: 'Pending',
+    //   // created_at: new Date().toISOString(), // don't wanna put this myself...
+    //   // updated_at: new Date().toISOString(), // don't wanna put this myself...
+    //   // message: null, // or provide a default message if needed
+    // };
+    // console.log(newRequest)
+    // insertRequest(newRequest, {
+    //   onSuccess: () => console.log('Request added'),
+    //   onError: (error) => console.log(error.message)
+    // })
+    // addRequest(newRequest);
+    // console.log(newRequest);
     // addRequest(newRequest);
   };
 
