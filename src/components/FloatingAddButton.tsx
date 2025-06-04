@@ -1,13 +1,14 @@
 import { TouchableOpacity, StyleSheet, View, Text } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
 
 export default function FloatingAddButton() {
   const router = useRouter();
 
   return (
     <TouchableOpacity style={styles.fab} onPress={() => router.push('/AddBook')}>
-      <Ionicons name="add" size={32} color="white" />
+      {/* <Ionicons name="add" size={32} color="white" /> */}
+      <FontAwesome name='plus' size={32} color="white"/>
     </TouchableOpacity>
   );
 }
