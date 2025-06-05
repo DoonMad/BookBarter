@@ -1,4 +1,4 @@
-import { Dimensions, FlatList, Image, Pressable, ScrollView, View, Text } from 'react-native';
+import { Dimensions, FlatList, Image, Pressable, ScrollView, View, Text, ActivityIndicator } from 'react-native';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { Ionicons, MaterialIcons, FontAwesome } from '@expo/vector-icons';
 import * as Linking from 'expo-linking';
@@ -55,7 +55,7 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
 
 const BookDetailsScreen = () => {
   const { bookId } = useLocalSearchParams();
-  const {data: book} = useBookById(typeof bookId === 'string' ? bookId : bookId[0]);
+  const {data: book, isLoading: isBookLoading} = useBookById(typeof bookId === 'string' ? bookId : bookId[0]);
   const {data: owner} = useUserbyId(book?.owner_id);
   const { requests, addRequest } = useRequest();
   const {session} = useAuth()
@@ -63,8 +63,11 @@ const BookDetailsScreen = () => {
   const {mutate: insertRequest} = useInsertRequest();
   // const { refetch } = useFindExistingRequest();
   const { checkRequest } = useFindExistingRequest();
+  const [reqLoading, setReqLoading] = useState(false)
 
-
+  if(isBookLoading){
+    return <ActivityIndicator size="large" color="#0000ff" />
+  }
   if (!book) {
     return (
       <View className="p-4 items-center justify-center">
@@ -83,12 +86,14 @@ const BookDetailsScreen = () => {
     //   return; // don't create a duplicate
     // }
     if(!currentUserId) return;
+    setReqLoading(true)
     try {
       // Check for existing request directly in the database
       const existingRequest = await checkRequest(book.id, currentUserId, intent);
       
       if (existingRequest) {
-        alert("Request Already Sent" + "You've already sent this type of request for this book.");
+        alert("You've already sent this type of request for this book.");
+        setReqLoading(false)
         return;
       }
 
@@ -102,7 +107,10 @@ const BookDetailsScreen = () => {
       // const { error } = await supabase.from('requests').insert(newRequest);
       console.log(newRequest)
       insertRequest(newRequest, {
-        onSuccess: () => console.log('Request added'),
+        onSuccess: () => {
+          console.log('Request added');
+          alert("Request sent!")
+        },
         onError: (error) => console.log(error.message)
       })
     }
@@ -111,6 +119,9 @@ const BookDetailsScreen = () => {
     // } 
     catch {
       alert("Error");
+    }
+    finally{
+      setReqLoading(false);
     }
 
     // console.log(intent)
@@ -144,6 +155,10 @@ const BookDetailsScreen = () => {
       console.error('Error sharing:', error);
     }
   };
+
+  if(reqLoading){
+    return <ActivityIndicator />
+  }
 
   return (
     <View className="flex-1 bg-gray-50">
@@ -280,6 +295,7 @@ const BookDetailsScreen = () => {
           )}
         </View>
       </View>
+      
     </View>
   );
 };

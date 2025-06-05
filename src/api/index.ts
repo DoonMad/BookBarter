@@ -128,7 +128,8 @@ export const useIncomingRequestList = (userId?: string) => {
       const { data, error } = await supabase
         .from('requests')
         .select('*, books!inner(*)') // inner join with books table
-        .eq('books.owner_id', userId);
+        .eq('books.owner_id', userId)
+        .order('created_at', { ascending: false });
       if(error){
         throw new Error(error.message);
       }
@@ -142,7 +143,7 @@ export const useOutgoingRequestList = (userId?: string) => {
   return useQuery({
     queryKey: ['outgoingRequests', userId],
     queryFn: async (): Promise<Request[]> => {
-      const { data, error } = await supabase.from('requests').select('*').eq('requester_id', userId);
+      const { data, error } = await supabase.from('requests').select('*').eq('requester_id', userId).order('created_at', { ascending: false });
       if(error){
         throw new Error(error.message);
       }

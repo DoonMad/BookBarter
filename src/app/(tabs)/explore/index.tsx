@@ -12,7 +12,7 @@ export default function TabOneScreen() {
   const {session, sessionLoading} = useAuth()
 
   const {data: books, error, isLoading} = useBookList();
-  console.log(books)
+  // console.log(books)
 
   if(isLoading){
     return <ActivityIndicator />
