@@ -3,7 +3,7 @@ import React from 'react'
 import { Link, Redirect, router } from 'expo-router'
 import { useAuth } from '../contexts/AuthProvider'
 import { ActivityIndicator } from 'react-native-paper'
-import { supabase } from '../lib/supabase'
+import { supabase, supabaseAdmin } from '../lib/supabase'
 
 const index = () => {
   const {session, sessionLoading} = useAuth()
@@ -18,6 +18,7 @@ const index = () => {
       <Button title='SignIn' onPress={() => router.push('/(auth)/SignIn')} />
       <Button title='Explore' onPress={() => router.push('/(tabs)/explore')} />
       <Button title='Sign Out' onPress={() => supabase.auth.signOut()} />
+      <Button title='Delete Account' onPress={() => supabaseAdmin.auth.admin.deleteUser(session.user.id)} /> 
     </View>
   )
 }

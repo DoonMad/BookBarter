@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, ScrollView, Image, Alert } from 'react-native';
+import { View, Text, TextInput, Pressable, ScrollView, Image, Alert, ActivityIndicator } from 'react-native';
 import { FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { RadioButton } from 'react-native-paper';
 import { router } from 'expo-router';
 import { useInsertBook } from '../api';
 import { useAuth } from '../contexts/AuthProvider';
+
+import * as FileSystem from 'expo-file-system';
+import { randomUUID } from 'expo-crypto';
+import { supabase } from '../lib/supabase';
+import {decode} from 'base64-arraybuffer'
+import { SUPABASE_URL } from '@env';
 
 const AddBook = () => {
   const [title, setTitle] = useState('');
@@ -18,6 +24,7 @@ const AddBook = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const {mutate: insertBook, error: insertBookError} = useInsertBook();
   const {session, sessionLoading} = useAuth();
+  const [submitLoading, setSubmitLoading] = useState(false);
 
 
   const validate = () => {
@@ -31,17 +38,43 @@ const AddBook = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = () => {
+  const uploadImage = async(image?: string) => {
+    if(!image?.startsWith('file://')){
+      return;
+    }
+    const base64 = await FileSystem.readAsStringAsync(image, {
+      encoding: 'base64'
+    });
+    const filePath = `${session?.user.id}/${randomUUID()}.png`;
+    const contentType = 'image/png';
+    const {data, error} = await supabase.storage.from('book-images').upload(filePath, decode(base64), {contentType});
+    if(error){
+      console.error(error);
+    }
+    // console.log(data?.path, `${SUPABASE_URL}/storage/v1/object/public/book-images/${data?.path}`)
+    if(data) return `${SUPABASE_URL}/storage/v1/object/public/book-images/${data.path}`;
+  }
+
+  const handleSubmit = async () => {
     if (!validate()) return;
     if(!session?.user.id){
       router.push('/')
       return;
     }
-    
+    setSubmitLoading(true);
+    // Upload all images and wait for completion
+    // console.log
+    const imagePaths = await Promise.all(images.map((image) => uploadImage(image)));
+    // const uploadedImagePaths = imagePaths.map((path) => `${SUPABASE_URL}/storage/v1/object/public/book-images/${path}`);
+    const filteredImagePaths = imagePaths.filter((path): path is string => !!path);
+    // console.log(filteredImagePaths)
+
+    // console.log(session?.user?.id);
+
     const newBook = {
       title,
       author,
-      images: ['https://img.freepik.com/free-vector/books-stack-realistic_1284-4735.jpg?semt=ais_hybrid&w=740', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTktoNpsu4s9DMHTtXkuuItwSp2ArmLW4YjdA&s'],
+      images: filteredImagePaths,
       condition,
       owner_id: session?.user?.id, // Will be replaced with actual user ID
       intent,
@@ -50,16 +83,16 @@ const AddBook = () => {
     };
     
     console.log('Submitting book:', newBook);
-    console.log("here")
-    insertBook(newBook, {onSuccess: () => console.log('success'), onError: (error) => console.log(error.message)});
+    insertBook(newBook, {onSuccess: () => {
+      console.log('success');
+      Alert.alert('Success', 'Book added successfully!');
+      router.push('/(tabs)/explore');
+    }, onError: (error) => console.log(error.message)});
     // Here you would typically send this to your backend
     if(insertBookError){
       console.log(insertBookError)
       return;
     }
-    else
-    Alert.alert('Success', 'Book added successfully!');
-    router.push('/(tabs)/explore')
   };
 
   const pickImage = async (isCamera: boolean) => {
