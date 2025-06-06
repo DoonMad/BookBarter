@@ -1,6 +1,8 @@
 # 📚 BookBarter - Your Community Book Exchange App
 
-![BookBarter Banner](https://placehold.co/600x400/1E90FF/ffffff?text=BookBarter&font=Raleway)
+<p align="center">
+  <img src="./assets/images/BookBarter-banner.png" alt="BookBarter - A place for stories" width="100%" />
+</p>
 
 A mobile app that makes it easy to give away or exchange books with others around you. Built with modern technologies for a seamless experience.
 
