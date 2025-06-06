@@ -1,5 +1,6 @@
 // components/BookListItem.tsx
-import { View, Text, Image, StyleSheet, Pressable } from 'react-native';
+import { Image, StyleSheet, Pressable } from 'react-native';
+import { Text, View} from './Themed'
 // import { Book } from '@/types';
 import { router } from 'expo-router';
 // import { Book } from '@/assets/data/books';
@@ -63,6 +64,7 @@ const styles = StyleSheet.create({
     width: '100%',
     aspectRatio: 2 / 3, // Standard book cover ratio
     resizeMode: 'contain',
+    backgroundColor: 'gray'
   },
   infoContainer: {
     padding: 10,

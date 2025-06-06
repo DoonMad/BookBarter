@@ -1,34 +1,48 @@
-import { FlatList, Text } from 'react-native';
-// import books from '@/assets/data/books';
+import { FlatList } from 'react-native';
 import BookListItem from '@/src/components/BookListItem';
-import { useEffect, useState } from 'react';
-import { supabase } from '@/src/lib/supabase';
 import { useAuth } from '@/src/contexts/AuthProvider';
-import { useQuery } from '@tanstack/react-query';
 import { ActivityIndicator } from 'react-native-paper';
 import { useBookList } from '@/src/api';
+import { View, Text } from '@/src/components/Themed';
 
 export default function TabOneScreen() {
-  const {session, sessionLoading} = useAuth()
+  const { session, sessionLoading } = useAuth();
+  const { data: books, error, isLoading } = useBookList();
 
-  const {data: books, error, isLoading} = useBookList();
-  // console.log(books)
-
-  if(isLoading){
-    return <ActivityIndicator />
+  if (isLoading || sessionLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
   }
 
-  if(error){
-    return <Text>Failed to Get any data</Text>
+  if (error) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ color: 'error' }}>Failed to fetch books. Please try again.</Text>
+      </View>
+    );
+  }
+
+  if (!books?.length) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>No books available yet. Be the first to add one!</Text>
+      </View>
+    );
   }
 
   return (
+    <View style={{ flex: 1 }}>
       <FlatList
         data={books}
-        renderItem={({item}) => <BookListItem book= {item} />}
+        renderItem={({ item }) => <BookListItem book={item} />}
         numColumns={2}
-        contentContainerStyle={{gap: 8, padding: 8}}
-        columnWrapperStyle={{gap: 8}}
+        contentContainerStyle={{ gap: 10, padding: 10 }}
+        columnWrapperStyle={{ gap: 10 }}
+        showsVerticalScrollIndicator={false}
       />
+    </View>
   );
 }

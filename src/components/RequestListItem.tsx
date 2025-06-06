@@ -1,7 +1,5 @@
-import { View, Text, Image, Pressable } from 'react-native';
-// import { Request } from '@/assets/data/requests';
-import books from '@/assets/data/books';
-import users from '@/assets/data/users';
+import { Image, Pressable } from 'react-native';
+import { View, Text } from './Themed';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Request, useBookById, useUserbyId } from '../api';

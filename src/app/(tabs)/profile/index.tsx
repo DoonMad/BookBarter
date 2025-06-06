@@ -1,4 +1,4 @@
-import { View, Text, Image, FlatList, Pressable, Switch, ScrollView, ActivityIndicator, RefreshControl } from 'react-native';
+import { Image, FlatList, Pressable, Switch, ScrollView, ActivityIndicator, RefreshControl } from 'react-native';
 import { FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Link, router } from 'expo-router';
 import { Book, Request, useAllRequests, useBooksByIds, useUsersByIds } from '@/src/api';
@@ -8,6 +8,7 @@ import { useAuth } from '@/src/contexts/AuthProvider';
 import { useApprovedRequestList, useBookListFromOwnerId, useUserbyId } from '@/src/api';
 import { Alert } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
+import { View, Text } from '@/src/components/Themed';
 
 const ProfileScreen = () => {
   // State hooks at the top (React Hook rules)
@@ -95,7 +96,7 @@ const ProfileScreen = () => {
 
     return (
       <Pressable 
-        className="flex-row border border-gray-200 rounded-lg p-3 mb-3 bg-white"
+        className="flex-row border border-gray-200 rounded-lg p-3 mb-3"
         onPress={() => router.push(`/(tabs)/explore/${book.id}`)}
       >
         <Image 
@@ -109,10 +110,10 @@ const ProfileScreen = () => {
           <View className="flex-row items-center mb-2 flex-wrap">
             <View className={`px-2 py-1 rounded-full ${
               book.intent === 'Giveaway' ? 'bg-purple-100' : 'bg-amber-100'
-            }`}>
+            }`} style={{ backgroundColor: book.intent === 'Giveaway' ? '#E9D5FF' : '#FDE68A' }}>
               <Text className={`text-xs ${
                 book.intent === 'Giveaway' ? 'text-purple-800' : 'text-amber-800'
-              }`}>
+              }`} style={{ color: book.intent === 'Giveaway' ? '#6b21a8' : '#92400e' }}>
                 {book.intent}
               </Text>
             </View>
@@ -120,11 +121,25 @@ const ProfileScreen = () => {
             <View className={`px-2 py-1 rounded-full ml-2 ${
               status === 'Available' ? 'bg-green-100' :
               status === 'Requested' ? 'bg-blue-100' : 'bg-gray-100'
-            }`}>
+            }`} style={{
+              backgroundColor:
+              status === 'Available'
+                ? '#D1FAE5' // bg-green-100
+                : status === 'Requested'
+                ? '#DBEAFE' // bg-blue-100
+                : '#F3F4F6', // bg-gray-100
+            }}>
               <Text className={`text-xs ${
                 status === 'Available' ? 'text-green-800' :
                 status === 'Requested' ? 'text-blue-800' : 'text-gray-800'
-              }`}>
+              }`} style={{
+                color:
+                status === 'Available'
+                  ? '#065F46' // text-green-800
+                  : status === 'Requested'
+                  ? '#1E40AF' // text-blue-800
+                  : '#4B5563', // text-gray-800
+              }}>
                 {status}
               </Text>
             </View>
@@ -176,7 +191,7 @@ const ProfileScreen = () => {
 
   return (
     <ScrollView 
-      className="flex-1 bg-gray-50"
+      className="flex-1 bg-gray-700 p-2"
       refreshControl={
         <RefreshControl 
           refreshing={refreshing}
@@ -218,7 +233,7 @@ const ProfileScreen = () => {
           <Link href="/AddBook" asChild>
             <Pressable className="flex-row items-center bg-blue-50 px-3 py-1 rounded-full">
               <Ionicons name="add" size={18} color="#3b82f6" />
-              <Text className="text-blue-600 ml-1 text-sm">Add Book</Text>
+              <Text className="text-blue-600 ml-1 text-sm" style={{color: '#2563eb'}}>Add Book</Text>
             </Pressable>
           </Link>
         </View>

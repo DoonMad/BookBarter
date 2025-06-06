@@ -1,4 +1,5 @@
-import { FlatList, View, Text } from 'react-native';
+import { FlatList } from 'react-native';
+import { View, Text } from '../components/Themed';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { Redirect, Stack } from 'expo-router';
 import { useRequest } from '../contexts/RequestProvider';
@@ -22,7 +23,7 @@ export default function ModalScreen() {
   const {data: incomingRequests} = useIncomingRequestList(currentUserId)
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View className="flex-1 bg-gray-700">
       <Stack.Screen
         options={{
           title: 'Requests',
