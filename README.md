@@ -105,7 +105,15 @@ npx expo start
 ---
 
 ## 📸 Screenshots
+<p align="center">
+  <img src="./assets/screenshots/sign-up.jpg" alt="Sign Up" width="20%" />
+  <img src="./assets/screenshots/explore.jpg" alt="Explore Books" width="20%" />
+  <img src="assets/screenshots/book-details.jpg" alt="Book Details" width="20%" />
+  <img src="./assets/screenshots/requests.jpg" alt="Requests" width="20%" />
+  <img src="assets/screenshots/profile.jpg" alt="Profile" width="20%" />
+</p>
 
+More screenshots can be found in the `assets/screenshots` directory.
 ## 🤝 Contributing
 
 Contributions are welcome!
