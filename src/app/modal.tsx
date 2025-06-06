@@ -1,10 +1,9 @@
-import { FlatList } from 'react-native';
+import { FlatList, SafeAreaView, useColorScheme } from 'react-native';
 import { View, Text } from '../components/Themed';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { Redirect, Stack } from 'expo-router';
 import { useRequest } from '../contexts/RequestProvider';
 import RequestListItem from '../components/RequestListItem';
-import books from '@/assets/data/books';
 import { useIncomingRequestList, useOutgoingRequestList } from '../api';
 import { useAuth } from '../contexts/AuthProvider';
 
@@ -23,7 +22,7 @@ export default function ModalScreen() {
   const {data: incomingRequests} = useIncomingRequestList(currentUserId)
 
   return (
-    <View className="flex-1 bg-gray-700">
+    <SafeAreaView className="flex-1 bg-gray-700">
       <Stack.Screen
         options={{
           title: 'Requests',
@@ -35,7 +34,7 @@ export default function ModalScreen() {
         screenOptions={{
           tabBarActiveTintColor: '#3b82f6',
           tabBarInactiveTintColor: '#6b7280',
-          tabBarStyle: { backgroundColor: 'white' },
+          // tabBarStyle: { backgroundColor: useColorScheme() },
           tabBarIndicatorStyle: { backgroundColor: '#3b82f6' },
           tabBarLabelStyle: { fontWeight: '600', fontSize: 14, textTransform: 'none' },
           tabBarPressColor: '#e5e7eb',
@@ -57,7 +56,7 @@ export default function ModalScreen() {
                   currentUserId={currentUserId}
                 />
               )}
-              contentContainerStyle={{ paddingBottom: 20 }}
+              contentContainerStyle={{ paddingBottom: 20, gap: 10, padding: 10 }}
               ListEmptyComponent={
                 <View className="items-center justify-center mt-10">
                   <Text className="text-gray-500">No outgoing requests</Text>
@@ -82,7 +81,7 @@ export default function ModalScreen() {
                   currentUserId={currentUserId}
                 />
               )}
-              contentContainerStyle={{ paddingBottom: 20 }}
+              contentContainerStyle={{ paddingBottom: 20, gap: 10, padding: 10 }}
               ListEmptyComponent={
                 <View className="items-center justify-center mt-10">
                   <Text className="text-gray-500">No incoming requests</Text>
@@ -92,6 +91,6 @@ export default function ModalScreen() {
           )}
         </Tab.Screen>
       </Tab.Navigator>
-    </View>
+    </SafeAreaView>
   );
 }

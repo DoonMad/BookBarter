@@ -32,7 +32,8 @@ const RequestListItem = ({ request, type, currentUserId }: RequestListItemProps)
   return (
     <Pressable 
       onPress={() => router.push(`/explore/${book.id}`)}
-      className="flex-row p-4 border-b border-gray-200 bg-white active:bg-gray-100"
+      className="flex-row p-4 border-b border-gray-300 bg-white active:bg-gray-100 rounded-lg shadow-black shadow-md"
+      style={{}}
     >
       <Image 
         source={book.images[0] ? { uri: book.images[0] } : require('@/assets/images/no-image.png')}

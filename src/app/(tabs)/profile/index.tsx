@@ -96,7 +96,7 @@ const ProfileScreen = () => {
 
     return (
       <Pressable 
-        className="flex-row border border-gray-200 rounded-lg p-3 mb-3"
+        className="flex-row border border-gray-300 rounded-lg p-3 mb-3"
         onPress={() => router.push(`/(tabs)/explore/${book.id}`)}
       >
         <Image 
@@ -191,7 +191,7 @@ const ProfileScreen = () => {
 
   return (
     <ScrollView 
-      className="flex-1 bg-gray-700 p-2"
+      className="flex-1"
       refreshControl={
         <RefreshControl 
           refreshing={refreshing}
@@ -203,7 +203,9 @@ const ProfileScreen = () => {
       {/* User Profile Card */}
       <View className="bg-white p-6 rounded-b-xl shadow-sm">
         <View className="items-center mb-4">
-          <View className="w-24 h-24 rounded-full bg-gray-200 items-center justify-center mb-3 overflow-hidden">
+          <View className="w-24 h-24 rounded-full bg-gray-200 items-center justify-center mb-3 overflow-hidden"
+            style={{backgroundColor: '#e5e7eb'}}
+          >
             {currentUser?.avatar ? (
               <Image 
                 source={{ uri: currentUser.avatar }} 
