@@ -1,8 +1,8 @@
-import { Image, Pressable, View } from 'react-native';
-import { Text } from './Themed';
+import { Alert, Image, Pressable, View, Text } from 'react-native';
+// import { Text } from './Themed';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { Request, useBookById, useUserbyId } from '../api';
+import { Request, useBookById, useUpdateRequestStatus, useUserbyId } from '../api';
 
 type RequestListItemProps = {
   request: Request;
@@ -14,6 +14,7 @@ const RequestListItem = ({ request, type, currentUserId }: RequestListItemProps)
   const {data: book} = useBookById(request.book_id);
   const {data: requester} = useUserbyId(request.requester_id);
   const {data: owner} = useUserbyId(book?.owner_id);
+  const updateStatus = useUpdateRequestStatus(request);
 
   if (!book || !requester || !owner) return null;
 
@@ -29,6 +30,19 @@ const RequestListItem = ({ request, type, currentUserId }: RequestListItemProps)
     }
   };
 
+  const updateRequestStatus = (status: 'Approved' | 'Declined') => {
+    updateStatus.mutate({
+      status: status
+    }, {
+      onSuccess: () => {
+        Alert.alert("Success", `Request ${status}!`);
+      },
+      onError: (error) => {
+        Alert.alert("Error", error.message);
+      }
+    });
+  }
+
   return (
     <Pressable 
       onPress={() => router.push(`/explore/${book.id}`)}
@@ -41,26 +55,40 @@ const RequestListItem = ({ request, type, currentUserId }: RequestListItemProps)
       />
 
       <View className="flex-1 ml-4">
-        <Text className="text-lg font-semibold text-gray-900" style={{color: '#111827'}}>{book.title}</Text>
-        <Text className="text-sm text-gray-600" style={{color: '#4b5563'}}>by {book.author}</Text>
+        <Text className="text-lg font-semibold text-gray-900" 
+        // style={{color: '#111827'}}
+        >
+          {book.title}</Text>
+        <Text className="text-sm text-gray-600" 
+        // style={{color: '#4b5563'}}
+        >
+          by {book.author}</Text>
 
         <View className="flex-row items-center mt-1">
           <Ionicons name="person" size={14} color="#6b7280" />
-          <Text className="ml-1 text-sm text-gray-700" style={{color: '#374151'}}>
+          <Text className="ml-1 text-sm text-gray-700" 
+          // style={{color: '#374151'}}
+          >
             {type === 'incoming' ? 'From' : 'To'}: {displayUser.name}
           </Text>
         </View>
 
         <View className="flex-row items-center mt-2">
-          <View className={`px-2 py-1 rounded-full ${getStatusColor()}`} style={{backgroundColor: '#f59e0b'}}> 
+          <View className={`px-2 py-1 rounded-full ${getStatusColor()}`}
+          //  style={{backgroundColor: '#f59e0b'}}
+          > 
             {/* hardcoded color, will change later */}
             <Text className="text-xs font-medium text-white">{request.status}</Text>
           </View>
-          <Text className="ml-2 text-sm text-gray-600" style={{color: '#4b5563'}}>{request.type} Request</Text>
+          <Text className="ml-2 text-sm text-gray-600" 
+          // style={{color: '#4b5563'}}
+          >{request.type} Request</Text>
         </View>
 
         <View className="flex-row justify-between items-center mt-2">
-          <Text className="text-xs text-gray-500" style={{color: '#6b7280'}}>
+          <Text className="text-xs text-gray-500" 
+          // style={{color: '#6b7280'}}
+          >
             {new Date(request.updated_at).toLocaleDateString('en-US', { 
               month: 'short', 
               day: 'numeric',
@@ -75,6 +103,7 @@ const RequestListItem = ({ request, type, currentUserId }: RequestListItemProps)
                 onPress={(e) => {
                   e.stopPropagation();
                   console.log('Approve request', request.id);
+                  updateRequestStatus('Approved');
                 }}
                 className="p-1.5 ml-2 rounded-full bg-gray-100 active:bg-gray-200"
               >
@@ -84,6 +113,7 @@ const RequestListItem = ({ request, type, currentUserId }: RequestListItemProps)
                 onPress={(e) => {
                   e.stopPropagation();
                   console.log('Decline request', request.id);
+                  updateRequestStatus('Declined');
                 }}
                 className="p-1.5 ml-2 rounded-full bg-gray-100 active:bg-gray-200"
               >

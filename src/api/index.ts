@@ -109,7 +109,7 @@ export const useUsersByIds = (userIds?: string[]) => {
 export const useUserbyId = (id?: string) => {
   
   return useQuery({
-    queryKey: ['book', id],
+    queryKey: ['user', id],
     queryFn: async (): Promise<User> => {
       const { data, error } = await supabase.from('users').select('*').eq('id', id).single();
       if(error){
@@ -237,6 +237,43 @@ export const useInsertRequest = () => {
     },
     async onSuccess() {
       await client.invalidateQueries({queryKey: ['requests']})
+    }
+  })
+}
+
+export const useUpdateRequestStatus = (req: Request) => {
+  const client = useQueryClient();
+  const {data: book} = useBookById(req.book_id);
+  return useMutation({
+    async mutationFn({  status  }: { 
+      status: "Approved" | "Declined"
+    }) {
+      const {error, data: newReq} = await supabase.from('requests').update({status}).eq('id', req.id);
+      // const {data: book} = useBookById(req.book_id);
+      if(error) {
+        throw new Error(error.message);
+      }
+      return newReq;
+    },
+    async onSuccess() {
+      await Promise.all([
+        client.invalidateQueries({ queryKey: ['requests'] }),
+        client.invalidateQueries({ queryKey: ['books'] }),
+        client.invalidateQueries({ queryKey: ['incomingRequests', book?.owner_id] }),
+        client.invalidateQueries({ queryKey: ['outgoingRequests', req.requester_id] }),
+        
+        // Optional: Invalidate specific queries if you have them
+        // client.invalidateQueries({ 
+        //   queryKey: ['requests', reqId] 
+        // }),
+        client.invalidateQueries({
+          queryKey: ['books', book?.id]
+        })
+      ]);
+    },
+    async onError(error) {
+      console.error(error);
+      // alert('Could not update request status');
     }
   })
 }

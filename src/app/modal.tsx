@@ -1,4 +1,4 @@
-import { FlatList, SafeAreaView, useColorScheme } from 'react-native';
+import { FlatList, Pressable, SafeAreaView, useColorScheme } from 'react-native';
 import { View, Text } from '../components/Themed';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { Redirect, Stack } from 'expo-router';
@@ -6,6 +6,7 @@ import { useRequest } from '../contexts/RequestProvider';
 import RequestListItem from '../components/RequestListItem';
 import { useIncomingRequestList, useOutgoingRequestList } from '../api';
 import { useAuth } from '../contexts/AuthProvider';
+import { Ionicons } from '@expo/vector-icons';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -91,6 +92,14 @@ export default function ModalScreen() {
           )}
         </Tab.Screen>
       </Tab.Navigator>
+        <Pressable 
+          className='bg-[dodgerblue] w-[60px] h-[60px] rounded-md absolute bottom-20 right-10 justify-center'
+          onPress={() => {
+            console.log('pressed')
+          }}
+        >
+          <Ionicons name='filter' size={40} color='white' />
+        </Pressable>
     </SafeAreaView>
   );
 }
