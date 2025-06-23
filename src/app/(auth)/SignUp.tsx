@@ -32,9 +32,7 @@ const SignUp = () => {
     if (!validate()) return;
     setLoading(true)
 
-    console.log(formData)
-
-    const { data: { session }, error } = await supabase.auth.signUp({
+    const { data: { session, user }, error } = await supabase.auth.signUp({
       email: formData.email,
       password: formData.password,
       phone: formData.phone,
@@ -46,9 +44,13 @@ const SignUp = () => {
         }
       }
     })
-
-    if (error) alert(error.message)
-    if (!session) alert('Please check your inbox for email verification!')
+    // console.log("user :", user);
+    // console.log("error:", error);
+    // console.log("session : ", session);
+    // console.log("email confirmation : ", user?.user_metadata.email_verified)
+    if (error) alert(error.message);
+    else if(user?.user_metadata.email_verified !== undefined && user?.user_metadata.email_verified === false) alert("Please check your inbox for email verification!");
+    else if (!session) alert("This email is already in use!");
     setLoading(false)
   }
 
@@ -75,6 +77,7 @@ const SignUp = () => {
         <Text className="text-gray-700 mb-1">Email</Text>
         <View className={`border rounded-lg p-2 ${errors.email ? 'border-red-500' : 'border-gray-300'}`}>
           <TextInput
+            textContentType='emailAddress'
             value={formData.email}
             onChangeText={(text) => setFormData({...formData, email: text})}
             placeholder="john.smith@example.com"
@@ -92,7 +95,7 @@ const SignUp = () => {
           <TextInput
             value={formData.password}
             onChangeText={(text) => setFormData({...formData, password: text})}
-            placeholder="••••••••"
+            placeholder="********"
             secureTextEntry
             className="text-base"
           />
